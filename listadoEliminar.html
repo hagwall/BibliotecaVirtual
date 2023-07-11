@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Libros</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <h2>Baja de Libros</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Titulo</th>
+                <th>Autor</th>
+                <th>Ejemplar</th>
+                <th align="right">Prestados</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="libro in libros">
+                <td>{{ libro.codigo }}</td>
+                <td>{{ libro.titulo }}</td>
+                <td>{{ libro.autor }}</td>
+                <td align="right">{{ libro.ejemplar }}</td>
+                <td align="right">{{ libro.prestados }}</td>
+                <td><button @click="eliminarLibro(libro.codigo)">Eliminar</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="contenedor-centrado">
+        <a href="index.html">Menu principal</a>
+    </div>
+
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    libros: []
+                }
+            },
+            methods: {
+                obtenerLibros() {
+                    const URL = "https://hageo.pythonanywhere.com/"
+
+
+                    fetch(URL + 'libros')
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json()
+                            } else {
+                                throw new Error('Error al obtener los libros.')
+                            }
+                        })
+                        .then(data => {
+                            this.libros = data
+                        })
+                        .catch(error => {
+                            console.log('Error:', error)
+                            alert('Error al obtener los libros.')
+                        })
+                },
+                eliminarLibro(codigo) {
+                    const URL = "https://hageo.pythonanywhere.com/"
+
+
+                    fetch(URL + `libros/${codigo}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                // Eliminar el producto de la lista después de eliminarlo en el servidor
+                                this.libros = this.libros.filter(libro => libro.codigo !== codigo)
+                                console.log('Libro eliminado correctamente.')
+                            }
+                        })
+                        .catch(error => {
+                            console.log('Error:', error)
+                            alert('Error al eliminar el Libro.')
+                        })
+                }
+            },
+            mounted() {
+                this.obtenerLibros()
+            }
+        })
+        app.mount('body')
+    </script>
+
+</body>
+</html>

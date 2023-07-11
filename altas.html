@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Libro</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+
+
+<body>
+    <h2>Agregar Libros al Inventario</h2>
+    
+    <form id="formulario">
+        <label for="codigo">Codigo:</label>
+        <input type="text" id="codigo" name="codigo" required><br>
+
+
+        <label for="titulo">Titulo:</label>
+        <input type="text" id="titulo" name="titulo" required><br>
+
+
+        <label for="autor">Autor:</label>
+        <input type="text" id="autor" name="autor" required><br>
+
+
+        <label for="ejemplar">Ejemplares:</label>
+        <input type="number" id="ejemplar" name="ejemplar" required><br>
+
+        <label for="prestados">NroPrestados:</label>
+        <input type="number" id="prestados" name="prestados" required><br>
+
+
+        <button type="submit">Agregar Libro</button>
+        <a href="index.html">Menu principal</a>
+    </form>
+    <script>
+        const URL = "https://hageo.pythonanywhere.com/"
+        // Capturamos el evento de envío del formulario
+        document.getElementById('formulario').addEventListener('submit', function (event) {
+            event.preventDefault() // Evitamos que se recargue la página
+
+
+            // Obtenemos los valores del formulario
+            var codigo = document.getElementById('codigo').value
+            var titulo = document.getElementById('titulo').value
+            var autor = document.getElementById('autor').value
+            var ejemplar = document.getElementById('ejemplar').value
+            var prestados = document.getElementById('prestados').value
+
+
+            // Creamos un objeto con los datos del producto
+            var libro = {
+                codigo: codigo,
+                titulo: titulo,
+                autor: autor,
+                ejemplar: ejemplar,
+                prestados: prestados
+            }
+            console.log(libro)
+            // Realizamos la solicitud POST al servidor
+            fetch(URL + 'libros', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(libro)
+            })
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.json() // Parseamos la respuesta JSON
+                    } else {
+                        throw new Error('Error al agregar el libro.')
+                    }
+                })
+                .then(function (data) {
+                    alert('libro agregado correctamente.')
+                    document.getElementById('codigo').value = ""
+                    document.getElementById('titulo').value = ""
+                    document.getElementById('autor').value = ""
+                    document.getElementById('ejemplar').value = ""
+                    document.getElementById('prestados').value = ""
+                })
+                .catch(function (error) {
+                    console.log('Error:', error)
+                    alert('Error al agregar el libro.')
+                })
+        })
+    </script>
+</body>
+
+
+</html>

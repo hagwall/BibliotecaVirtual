@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Libros</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+
+
+<body>
+    <h2>Listado de Libros</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Titulo</th>
+                <th>Autor</th>
+                <th>Ejemplares</th>
+                <th align="right">Prestados</th>
+                
+            </tr>
+        </thead>
+        <tbody id="tablaLibros">
+        </tbody>
+    </table>
+
+
+    <div class="contenedor-centrado">
+        <a href="index.html">Menu principal</a>
+    </div>
+
+
+    <script>
+        //const URL = "http://127.0.0.1:5000/"
+        const URL = "https://hageo.pythonanywhere.com/"
+
+
+        // Realizamos la solicitud GET al servidor para obtener todos los productos
+        fetch(URL + 'libros')
+            .then(function (response) {
+                if (response.ok) {
+                    return response.json() // Parseamos la respuesta JSON
+                } else {
+                    throw new Error('Error al obtener los libros.')
+                }
+            })
+            .then(function (data) {
+                var tablaLibros = document.getElementById('tablaLibros')
+
+
+                // Iteramos sobre los productos y agregamos filas a la tabla
+                data.forEach(function (libro) {
+                    var fila = document.createElement('tr')
+                    fila.innerHTML = '<td>' + libro.codigo + '</td>' +
+                        '<td>' + libro.titulo + '</td>' +
+                        '<td>' + libro.autor + '</td>' +
+                        '<td align="right">' + libro.ejemplar + '</td>' +
+                        '<td align="right">&nbsp; &nbsp;&nbsp; &nbsp;' + libro.prestados + '</td>'
+                    tablaLibros.appendChild(fila)
+                })
+            })
+            .catch(function (error) {
+                console.log('Error:', error)
+                alert('Error al obtener los libros.')
+            })
+    </script>
+</body>
+</html>

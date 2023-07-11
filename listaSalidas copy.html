@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Salidas</title>
+    <link rel="stylesheet" href="estilos.css">
+    <script src="https://unpkg.com/vue@3.2.20"></script>
+</head>
+<body>
+    <div id="app">
+        <h2>Listado de salidas de libros</h2>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Titulo</th>
+              <th>Autor</th>
+              <th>Ejemplar</th>
+              <th>Prestados</th>
+              <th>ListaSalidas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="libro in libros" :key="libro.codigo">
+              <td>{{ libro.codigo }}</td>
+              <td>{{ libro.titulo }}</td>
+              <td>{{ libro.autor }}</td>
+              <td align="right">{{ libro.ejemplar }}</td>
+              <td align="right">&nbsp; &nbsp; {{ libro.prestados }}</td>
+              <td>
+                <button @click="agregarAlListaSalida(libro)">&nbsp;&nbsp;<b>+</b>&nbsp;&nbsp;</button>
+                <button @click="restarDelListaSalida(libro)">&nbsp;&nbsp;<b>-</b>&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    
+    
+        <div v-if="mostrarListaSalida">
+          <h3>libros en el ListaSalida:</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Titulo</th>
+                <th>Autor</th>
+                <th>Ejemplar</th>
+                <th>Prestados</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in listaSalida" :key="item.codigo">
+                <td>{{ item.codigo }}</td>
+                <td>{{ tem.titulo }}</td>
+                <td>{{ item.autor }}</td>
+                <td align="right">{{ item.ejemplar }}</td>
+                <td align="right">&nbsp; &nbsp; {{ item.prestados }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+    
+    
+        <div v-if="!mostrarListaSalida" class="contenedor-centrado">
+          <button @click="obtenerListaSalida">Mostrar ListaSalida</button>
+        </div>
+    
+    
+        <div class="contenedor-centrado">
+          <a href="index.html">Menu principal</a>
+        </div>
+    
+    
+      </div>
+    
+    
+      <script>
+        //const URL = "http://127.0.0.1:5000/"
+        const URL = "https://hageo.pythonanywhere.com/"
+    
+    
+        const app = Vue.createApp({
+          data() {
+            return {
+              libros: [],
+              mostrarListaSalida: false,
+              listaSalida: [],
+            }
+          },
+          created() {
+            this.obtenerLibros()
+          },
+          methods: {
+            obtenerLibros() {
+              fetch(URL + 'libros')
+                .then(response => response.json())
+                .then(data => {
+                  this.libros = data
+                })
+                .catch(error => {
+                  console.error(URL + 'libros', error)
+                  alert('Error al obtener los libros.')
+                })
+            },
+            (libro) {
+              fetch(URL + 'listaSalida', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  codigo: libro.codigo,
+                  cantidad: 1, // Agregamos una unidad al carrito
+                }),
+              })
+                .then(response => response.json())
+                .then(data => {
+                  alert(data.message)
+                })
+                .catch(error => {
+                  console.error('Error al agregar el libro al listaSalia:', error)
+                  alert('Error al agregar el libro al listaSalida.')
+                })
+            },
+            restarDellistaSalida(libro) {
+              fetch(URL + 'listaSalida', {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  codigo: libro.codigo,
+                  cantidad: 1, // Restamos una unidad del carrito
+                }),
+              })
+                .then(response => response.json())
+                .then(data => {
+                  alert(data.message)
+                })
+                .catch(error => {
+                  console.error('Error al restar el libro del listaSalida:', error)
+                  alert('Error al restar el libro del listaSalida.')
+                })
+            },
+            obtenerlistaSalida() {
+              fetch(URL + 'listaSalida')
+                .then(response => response.json())
+                .then(data => {
+                  this.listaSalida = data
+                  this.mostrarListaSalida = true
+                })
+                .catch(error => {
+                  console.error('Error al obtener el listaSalida:', error)
+                  alert('Error al obtener el listaSalida.')
+                })
+            },
+          },
+        })
+        app.mount('#app')
+      </script>
+    
+</body>
+</html>
